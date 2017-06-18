@@ -1,0 +1,9 @@
+
+- ANALOG COMPARATOR
+- TIMER2 -> Assynconous Operation
+- SPI
+- I2C
+- INT
+- PCINT
+
+- Currently, only ATmega328 is supported, extend support to others microcontrollers

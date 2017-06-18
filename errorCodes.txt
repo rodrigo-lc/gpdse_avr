@@ -1,0 +1,5 @@
+
+
+Error 100 - globalDefines.h - wrong version (globalDefines must be version 13.0).
+Error 101 - Version mismatch on header and source code files (ATmega328).
+Error 102 - EEPROM is not available in the selected device.

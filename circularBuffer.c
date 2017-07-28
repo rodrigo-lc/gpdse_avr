@@ -4,9 +4,9 @@
  * Module:			Circular Buffer Implementation
  * Author:			Leandro Schwarz
  * Version:			13.0
- * Last edition:	2017-06-17
+ * Last edition:	2017-07-28
  * -------------------------------------------------------------------------- */
- 
+
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
@@ -19,20 +19,20 @@
  * Initializes the circular buffer, alocating memory.
  * -------------------------------------------------------------------------- */
 
-bool_t circularBufferInit(volatile circularBuffer_t * buffer, uint8 bufferSize/*, variable_type */)
+bool_t circularBufferInit(volatile circularBuffer_t * buffer, uint16 bufferSize, uint8 variableSize)
 {
 	if(bufferSize == 0)
 		return FALSE;
 
 	// Memory allocation
-	buffer->data = (uint8 *)realloc(buffer->data, bufferSize/* * sizeof(variable_type)*/);
+	buffer->data = (uint8 *)malloc(bufferSize * variableSize);
 	if(buffer->data == NULL)
 		return FALSE;
 
-	buffer->size = bufferSize;
+	buffer->size = bufferSize * variableSize;
+	buffer->varSize = variableSize;
 	buffer->nextRead = 0;
 	buffer->nextWrite = 0;
-	buffer->size = 0;
 	buffer->occupation = 0;
 
 	return TRUE;
@@ -42,15 +42,23 @@ bool_t circularBufferInit(volatile circularBuffer_t * buffer, uint8 bufferSize/*
  * Pushes data into circular buffer. The function returns FALSE if buffer is full.
  * -------------------------------------------------------------------------- */
 
-bool_t circularBufferPushData(volatile circularBuffer_t * buffer, uint8 data)
+bool_t circularBufferPushData(volatile circularBuffer_t * buffer, void * data)
 {
-	if(((buffer->nextWrite + 1) % buffer->size) != buffer->nextRead){
-		buffer->data[buffer->nextWrite] = data;
-		buffer->nextWrite = (buffer->nextWrite + 1) % buffer->size;
+    uint8 * castData = data;
+    uint8 tempSize = buffer->varSize;
+
+	if(buffer->occupation == 0 || buffer->nextWrite != buffer->nextRead){
+		while(tempSize > 0) {
+            buffer->data[buffer->nextWrite] = *castData;
+            buffer->nextWrite++;
+            castData++;
+            tempSize--;
+		}
+		buffer->nextWrite %= buffer->size;
 		buffer->occupation++;
 
 		return TRUE;
-
+	}
 	return FALSE;
 }
 
@@ -58,14 +66,16 @@ bool_t circularBufferPushData(volatile circularBuffer_t * buffer, uint8 data)
  * Pops data from the circular buffer. If the buffer is empty, the last
  * retrieved data will be returned and the pointer will not be changed. The
  * circularBufferIsEmpty() function must be called to check if there is data to
- * be read in the buffer.
+ * be read in the buffer. Returned data must be immediately copied, since the
+ * pointed data can now be changed by circularBufferPushData() calls.
  * -------------------------------------------------------------------------- */
 
-uint8 circularBufferPopData(volatile circularBuffer_t * buffer)
+void * circularBufferPopData(volatile circularBuffer_t * buffer)
 {
-	uint8 data = buffer->data[buffer->nextRead];
+	void * data = buffer->data + buffer->nextRead;
+
 	if(buffer->occupation > 0){
-		buffer->nextRead = (buffer->nextRead + 1) % buffer->size;
+		buffer->nextRead = (buffer->nextRead + buffer->varSize) % buffer->size;
 		buffer->occupation--;
 	}
 

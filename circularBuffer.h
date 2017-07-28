@@ -4,7 +4,7 @@
  * Module:			Circular Buffer Implementation
  * Author:			Leandro Schwarz
  * Version:			13.0
- * Last edition:	2017-06-17
+ * Last edition:	2017-07-28
  * -------------------------------------------------------------------------- */
 
 #ifndef __CIRCULAR_BUFFER_H
@@ -23,9 +23,10 @@
 // New data types --------------------------------------------------------------
 
 typedef struct circularBuffer_t{
-	uint8 nextRead;
-	uint8 nextWrite;
-	uint8 size;
+	uint16 nextRead;
+	uint16 nextWrite;
+	uint16 size;
+	uint8 varSize;
 	uint8 occupation;
 	uint8 * data;
 } circularBuffer_t;
@@ -38,7 +39,9 @@ typedef struct circularBuffer_t{
 // -----------------------------------------------------------------------------
 // Function declarations -------------------------------------------------------
 
-bool_t	circularBufferInit(volatile circularBuffer_t * buffer, uint8 bufferSize/*, variable_type */);
-bool_t	circularBufferPushData(volatile circularBuffer_t * buffer, uint8 data);
-uint8	circularBufferPopData(volatile circularBuffer_t * buffer);
+bool_t	circularBufferInit(volatile circularBuffer_t * buffer, uint16 bufferSize, uint8 variableSize);
+bool_t	circularBufferPushData(volatile circularBuffer_t * buffer, void * data);
+void *	circularBufferPopData(volatile circularBuffer_t * buffer);
 bool_t	circularBufferIsEmpty(volatile circularBuffer_t * buffer);
+
+#endif

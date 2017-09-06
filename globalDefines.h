@@ -1,14 +1,15 @@
 /* -----------------------------------------------------------------------------
  * Project:			GPDSE AVR8 Integrated Library
  * File:			globalDefines.h
- * Module:			Global definitions file for the GPDSE Project
+ * Module:			Global definitions file for the GPDSE AVR8 Project
  * Author:			Leandro Schwarz
- * Version:			13.0
- * Last edition:	2017-06-16
+ *					Hazael dos Santos Batista
+ * Build:			1
+ * Last edition:	September 6, 2017
  * ---------------------------------------------------------------------------*/
 
 #ifndef __GLOBALDEFINES_H
-	#define __GLOBALDEFINES_H 130
+#define __GLOBALDEFINES_H 1
 
 // -----------------------------------------------------------------------------
 // Define Clock Frequency ------------------------------------------------------
@@ -20,7 +21,10 @@
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
-#include <avr/io.h>
+#include "pinout.h"
+#if __PINOUT_H != 1
+	#error Error 100 - pinout.h - wrong build (pinout must be build 1).
+#endif
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -63,28 +67,36 @@
 // -----------------------------------------------------------------------------
 // New data types --------------------------------------------------------------
 
-typedef int8_t		int8;
-typedef int16_t		int16;
-typedef int32_t		int32;
-typedef int64_t		int64;
-typedef uint8_t		uint8;
-typedef uint16_t	uint16;
-typedef uint32_t	uint32;
-typedef uint64_t	uint64;
+typedef int8_t				int8;
+typedef int16_t				int16;
+typedef int32_t				int32;
+typedef int64_t				int64;
+typedef uint8_t				uint8;
+typedef uint16_t			uint16;
+typedef uint32_t			uint32;
+typedef uint64_t			uint64;
+typedef volatile int8_t		vint8;
+typedef volatile int16_t	vint16;
+typedef volatile int32_t	vint32;
+typedef volatile int64_t	vint64;
+typedef volatile uint8_t	vuint8;
+typedef volatile uint16_t	vuint16;
+typedef volatile uint32_t	vuint32;
+typedef volatile uint64_t	vuint64;
 
-typedef enum bool_t{
+typedef enum bool_t {
 	FALSE = 0,
 	TRUE = 1
 } bool_t;
 
-typedef enum logic_t{
+typedef enum logic_t {
 	LOW = 0,
 	HIGH = 1,
 	OFF = 0,
 	ON = 1
 } logic_t;
 
-typedef enum direction_t{
+typedef enum direction_t {
 	LEFT = 0,
 	RIGHT = 1,
 	UP = 0,
@@ -93,7 +105,7 @@ typedef enum direction_t{
 	COUNTERCLOCKWISE = 1
 } direction_t;
 
-typedef enum resultValue_t{
+typedef enum resultValue_t {
 	RESULT_OK = 0,
 	RESULT_UNSUPPORTED_SYSTEM_PRESCALER_VALUE,
 	RESULT_UNSUPPORTED_ADC_REFERENCE,
@@ -125,7 +137,7 @@ typedef enum resultValue_t{
 	RESULT_UNSUPPORTED_VALUE
 } resultValue_t;
 
-typedef enum systemPrescalerValue_t{
+typedef enum systemPrescalerValue_t {
 	SYSTEM_PRESCALER_OFF = 0,
 	SYSTEM_PRESCALER_2 = 1,
 	SYSTEM_PRESCALER_4 = 2,
@@ -137,7 +149,7 @@ typedef enum systemPrescalerValue_t{
 	SYSTEM_PRESCALER_256 = 8
 } systemPrescalerValue_t;
 
-typedef enum timerOutput_t{
+typedef enum timerOutput_t {
 	TIMER_PORT_NORMAL = 0,
 	TIMER_PORT_TOGGLE_ON_COMPARE = 1,
 	TIMER_PORT_CLEAR_ON_COMPARE = 2,
@@ -146,6 +158,11 @@ typedef enum timerOutput_t{
 	TIMER_PORT_INVERTING_MODE = 3,
 	TIMER_PORT_NO_CHANGE = 255
 } timerOutput_t;
+
+typedef volatile struct systemConfiguration_t {
+	uint32 systemClock	: 30;
+	uint8 unusedBits	: 2;
+} systemConfiguration_t;
 
 //////////////////////////// OLD FILE, MUST BE REMOVED BEFORE RELEASE
 //////////////////////////// OLD FILE, MUST BE REMOVED BEFORE RELEASE
@@ -157,7 +174,7 @@ typedef enum timerOutput_t{
 	#define noOperation(cycles)					__builtin_avr_delay_cycles(cycles)
 #endif
 
-typedef enum portMode_t{
+typedef enum portMode_t {
 	PORT_OUTPUT_LOW = 0,
 	PORT_OUTPUT_HIGH,
 	PORT_INPUT_TRISTATE,
@@ -165,7 +182,7 @@ typedef enum portMode_t{
 	PORT_NO_CHANGE = 255
 } portMode_t;
 
-typedef enum senseMode_t{
+typedef enum senseMode_t {
 	SENSE_LOW_LEVEL = 0,
 	SENSE_ANY_EDGE,
 	SENSE_FALLING_EDGE,

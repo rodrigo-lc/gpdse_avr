@@ -3,16 +3,17 @@
  * File:			ATmega328.c
  * Module:			ATmega328 basic interface
  * Author:			Leandro Schwarz
- * Version:			13.0
- * Last edition:	2017-06-17
+ *					Hazael dos Santos Batista
+ * Build:			1
+ * Last edition:	September 6, 2017
  * -------------------------------------------------------------------------- */
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "ATmega328.h"
-#if __ATMEGA328_H != 130
-	#error Error 101 - Version mismatch on header and source code files (ATmega328).
+#if __ATMEGA328_H != 1
+	#error Error 101 - Build mismatch on header and source code files (ATmega328).
 #endif
 
 /* -----------------------------------------------------------------------------
@@ -23,19 +24,39 @@ resultValue_t systemClockSetPrescaler(systemPrescalerValue_t prescaler)
 {
 	uint8 aux8 = 0;
 
-	switch(prescaler){
-		case SYSTEM_PRESCALER_OFF:		aux8 = 0;	break;
-		case SYSTEM_PRESCALER_2:		aux8 = 1;	break;
-		case SYSTEM_PRESCALER_4:		aux8 = 2;	break;
-		case SYSTEM_PRESCALER_8:		aux8 = 3;	break;
-		case SYSTEM_PRESCALER_16:		aux8 = 4;	break;
-		case SYSTEM_PRESCALER_32:		aux8 = 5;	break;
-		case SYSTEM_PRESCALER_64:		aux8 = 6;	break;
-		case SYSTEM_PRESCALER_128:		aux8 = 7;	break;
-		case SYSTEM_PRESCALER_256:		aux8 = 8;	break;
-		default:						return RESULT_UNSUPPORTED_SYSTEM_PRESCALER_VALUE;	break;
+	switch(prescaler) {
+	case SYSTEM_PRESCALER_OFF:
+		aux8 = 0;
+		break;
+	case SYSTEM_PRESCALER_2:
+		aux8 = 1;
+		break;
+	case SYSTEM_PRESCALER_4:
+		aux8 = 2;
+		break;
+	case SYSTEM_PRESCALER_8:
+		aux8 = 3;
+		break;
+	case SYSTEM_PRESCALER_16:
+		aux8 = 4;
+		break;
+	case SYSTEM_PRESCALER_32:
+		aux8 = 5;
+		break;
+	case SYSTEM_PRESCALER_64:
+		aux8 = 6;
+		break;
+	case SYSTEM_PRESCALER_128:
+		aux8 = 7;
+		break;
+	case SYSTEM_PRESCALER_256:
+		aux8 = 8;
+		break;
+	default:
+		return RESULT_UNSUPPORTED_SYSTEM_PRESCALER_VALUE;
+		break;
 	}
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE){
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
 		CLKPR = 0b10000000;
 		CLKPR = aux8;
 	}
@@ -81,24 +102,49 @@ resultValue_t int0Config(portMode_t port, senseMode_t sense)
 {
 	uint8 aux8 = 0;
 
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD2); setBit(DDRD, PD2);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD2); setBit(DDRD, PD2);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD2); clrBit(DDRD, PD2);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD2); clrBit(DDRD, PD2);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD2);
+		setBit(DDRD, PD2);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD2);
+		setBit(DDRD, PD2);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD2);
+		clrBit(DDRD, PD2);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD2);
+		clrBit(DDRD, PD2);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 
-	if(sense != SENSE_NO_CHANGE){
+	if(sense != SENSE_NO_CHANGE) {
 		aux8 = EICRA & ~(0x03 << ISC00);
-		switch(sense){
-			case SENSE_LOW_LEVEL:		break;
-			case SENSE_ANY_EDGE:		aux8 |= (0x01 << ISC00);			break;
-			case SENSE_FALLING_EDGE:	aux8 |= (0x02 << ISC00);			break;
-			case SENSE_RISING_EDGE:		aux8 |= (0x03 << ISC00);			break;
-			case SENSE_NO_CHANGE:		break;
-			default:					return RESULT_INT_SENSE_VALUE_UNSUPPORTED;	break;
+		switch(sense) {
+		case SENSE_LOW_LEVEL:
+			break;
+		case SENSE_ANY_EDGE:
+			aux8 |= (0x01 << ISC00);
+			break;
+		case SENSE_FALLING_EDGE:
+			aux8 |= (0x02 << ISC00);
+			break;
+		case SENSE_RISING_EDGE:
+			aux8 |= (0x03 << ISC00);
+			break;
+		case SENSE_NO_CHANGE:
+			break;
+		default:
+			return RESULT_INT_SENSE_VALUE_UNSUPPORTED;
+			break;
 		}
 		EICRA = aux8;
 	}
@@ -144,24 +190,49 @@ resultValue_t int1Config(portMode_t port, senseMode_t sense)
 {
 	uint8 aux8 = 0;
 
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD3); setBit(DDRD, PD3);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD3); setBit(DDRD, PD3);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD3); clrBit(DDRD, PD3);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD3); clrBit(DDRD, PD3);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD3);
+		setBit(DDRD, PD3);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD3);
+		setBit(DDRD, PD3);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD3);
+		clrBit(DDRD, PD3);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD3);
+		clrBit(DDRD, PD3);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 
-	if(sense != SENSE_NO_CHANGE){
+	if(sense != SENSE_NO_CHANGE) {
 		aux8 = EICRA & ~(0x03 << ISC10);
-		switch(sense){
-			case SENSE_LOW_LEVEL:		break;
-			case SENSE_ANY_EDGE:		aux8 |= (0x01 << ISC10);			break;
-			case SENSE_FALLING_EDGE:	aux8 |= (0x02 << ISC10);			break;
-			case SENSE_RISING_EDGE:		aux8 |= (0x03 << ISC10);			break;
-			case SENSE_NO_CHANGE:		break;
-			default:					return RESULT_INT_SENSE_VALUE_UNSUPPORTED;	break;
+		switch(sense) {
+		case SENSE_LOW_LEVEL:
+			break;
+		case SENSE_ANY_EDGE:
+			aux8 |= (0x01 << ISC10);
+			break;
+		case SENSE_FALLING_EDGE:
+			aux8 |= (0x02 << ISC10);
+			break;
+		case SENSE_RISING_EDGE:
+			aux8 |= (0x03 << ISC10);
+			break;
+		case SENSE_NO_CHANGE:
+			break;
+		default:
+			return RESULT_INT_SENSE_VALUE_UNSUPPORTED;
+			break;
 		}
 		EICRA = aux8;
 	}
@@ -235,13 +306,28 @@ void pcint7_0ClearInterruptRequest(void)
 
 resultValue_t pcint0ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB0); setBit(DDRB, PB0);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB0); setBit(DDRB, PB0);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB0); clrBit(DDRB, PB0);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB0); clrBit(DDRB, PB0);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB0);
+		setBit(DDRB, PB0);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB0);
+		setBit(DDRB, PB0);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB0);
+		clrBit(DDRB, PB0);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB0);
+		clrBit(DDRB, PB0);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT0);
 	return RESULT_OK;
@@ -263,13 +349,28 @@ void pcint0DeactivateInterrupt(void)
 
 resultValue_t pcint1ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB1); setBit(DDRB, PB1);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB1); setBit(DDRB, PB1);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB1); clrBit(DDRB, PB1);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB1); clrBit(DDRB, PB1);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB1);
+		setBit(DDRB, PB1);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB1);
+		setBit(DDRB, PB1);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB1);
+		clrBit(DDRB, PB1);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB1);
+		clrBit(DDRB, PB1);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT1);
 	return RESULT_OK;
@@ -291,13 +392,28 @@ void pcint1DeactivateInterrupt(void)
 
 resultValue_t pcint2ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB2); setBit(DDRB, PB2);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB2); setBit(DDRB, PB2);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB2); clrBit(DDRB, PB2);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB2); clrBit(DDRB, PB2);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB2);
+		setBit(DDRB, PB2);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB2);
+		setBit(DDRB, PB2);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB2);
+		clrBit(DDRB, PB2);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB2);
+		clrBit(DDRB, PB2);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT2);
 	return RESULT_OK;
@@ -319,13 +435,28 @@ void pcint2DeactivateInterrupt(void)
 
 resultValue_t pcint3ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB3); setBit(DDRB, PB3);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB3); setBit(DDRB, PB3);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB3); clrBit(DDRB, PB3);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB3); clrBit(DDRB, PB3);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB3);
+		setBit(DDRB, PB3);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB3);
+		setBit(DDRB, PB3);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB3);
+		clrBit(DDRB, PB3);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB3);
+		clrBit(DDRB, PB3);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT3);
 	return RESULT_OK;
@@ -347,13 +478,28 @@ void pcint3DeactivateInterrupt(void)
 
 resultValue_t pcint4ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB4); setBit(DDRB, PB4);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB4); setBit(DDRB, PB4);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB4); clrBit(DDRB, PB4);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB4); clrBit(DDRB, PB4);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB4);
+		setBit(DDRB, PB4);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB4);
+		setBit(DDRB, PB4);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB4);
+		clrBit(DDRB, PB4);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB4);
+		clrBit(DDRB, PB4);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT4);
 	return RESULT_OK;
@@ -375,13 +521,28 @@ void pcint4DeactivateInterrupt(void)
 
 resultValue_t pcint5ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB5); setBit(DDRB, PB5);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB5); setBit(DDRB, PB5);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB5); clrBit(DDRB, PB5);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB5); clrBit(DDRB, PB5);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB5);
+		setBit(DDRB, PB5);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB5);
+		setBit(DDRB, PB5);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB5);
+		clrBit(DDRB, PB5);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB5);
+		clrBit(DDRB, PB5);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT5);
 	return RESULT_OK;
@@ -403,13 +564,28 @@ void pcint5DeactivateInterrupt(void)
 
 resultValue_t pcint6ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB6); setBit(DDRB, PB6);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB6); setBit(DDRB, PB6);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB6); clrBit(DDRB, PB6);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB6); clrBit(DDRB, PB6);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB6);
+		setBit(DDRB, PB6);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB6);
+		setBit(DDRB, PB6);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB6);
+		clrBit(DDRB, PB6);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB6);
+		clrBit(DDRB, PB6);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT6);
 	return RESULT_OK;
@@ -431,13 +607,28 @@ void pcint6DeactivateInterrupt(void)
 
 resultValue_t pcint7ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTB, PB7); setBit(DDRB, PB7);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTB, PB7); setBit(DDRB, PB7);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTB, PB7); clrBit(DDRB, PB7);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTB, PB7); clrBit(DDRB, PB7);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTB, PB7);
+		setBit(DDRB, PB7);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTB, PB7);
+		setBit(DDRB, PB7);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTB, PB7);
+		clrBit(DDRB, PB7);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTB, PB7);
+		clrBit(DDRB, PB7);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK0, PCINT7);
 	return RESULT_OK;
@@ -489,13 +680,28 @@ void pcint14_8ClearInterruptRequest(void)
 
 resultValue_t pcint8ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC0); setBit(DDRC, PC0);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC0); setBit(DDRC, PC0);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC0); clrBit(DDRC, PC0);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC0); clrBit(DDRC, PC0);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC0);
+		setBit(DDRC, PC0);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC0);
+		setBit(DDRC, PC0);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC0);
+		clrBit(DDRC, PC0);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC0);
+		clrBit(DDRC, PC0);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT8);
 	return RESULT_OK;
@@ -517,13 +723,28 @@ void pcint8DeactivateInterrupt(void)
 
 resultValue_t pcint9ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC1); setBit(DDRC, PC1);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC1); setBit(DDRC, PC1);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC1); clrBit(DDRC, PC1);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC1); clrBit(DDRC, PC1);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC1);
+		setBit(DDRC, PC1);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC1);
+		setBit(DDRC, PC1);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC1);
+		clrBit(DDRC, PC1);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC1);
+		clrBit(DDRC, PC1);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT9);
 	return RESULT_OK;
@@ -545,13 +766,28 @@ void pcint9DeactivateInterrupt(void)
 
 resultValue_t pcint10ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC2); setBit(DDRC, PC2);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC2); setBit(DDRC, PC2);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC2); clrBit(DDRC, PC2);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC2); clrBit(DDRC, PC2);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC2);
+		setBit(DDRC, PC2);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC2);
+		setBit(DDRC, PC2);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC2);
+		clrBit(DDRC, PC2);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC2);
+		clrBit(DDRC, PC2);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT10);
 	return RESULT_OK;
@@ -573,13 +809,28 @@ void pcint10DeactivateInterrupt(void)
 
 resultValue_t pcint11ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC3); setBit(DDRC, PC3);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC3); setBit(DDRC, PC3);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC3); clrBit(DDRC, PC3);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC3); clrBit(DDRC, PC3);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC3);
+		setBit(DDRC, PC3);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC3);
+		setBit(DDRC, PC3);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC3);
+		clrBit(DDRC, PC3);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC3);
+		clrBit(DDRC, PC3);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT11);
 	return RESULT_OK;
@@ -601,13 +852,28 @@ void pcint11DeactivateInterrupt(void)
 
 resultValue_t pcint12ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC4); setBit(DDRC, PC4);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC4); setBit(DDRC, PC4);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC4); clrBit(DDRC, PC4);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC4); clrBit(DDRC, PC4);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC4);
+		setBit(DDRC, PC4);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC4);
+		setBit(DDRC, PC4);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC4);
+		clrBit(DDRC, PC4);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC4);
+		clrBit(DDRC, PC4);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT12);
 	return RESULT_OK;
@@ -629,13 +895,28 @@ void pcint12DeactivateInterrupt(void)
 
 resultValue_t pcint13ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC5); setBit(DDRC, PC5);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC5); setBit(DDRC, PC5);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC5); clrBit(DDRC, PC5);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC5); clrBit(DDRC, PC5);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC5);
+		setBit(DDRC, PC5);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC5);
+		setBit(DDRC, PC5);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC5);
+		clrBit(DDRC, PC5);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC5);
+		clrBit(DDRC, PC5);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT13);
 	return RESULT_OK;
@@ -657,13 +938,28 @@ void pcint13DeactivateInterrupt(void)
 
 resultValue_t pcint14ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTC, PC6); setBit(DDRC, PC6);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTC, PC6); setBit(DDRC, PC6);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTC, PC6); clrBit(DDRC, PC6);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTC, PC6); clrBit(DDRC, PC6);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTC, PC6);
+		setBit(DDRC, PC6);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTC, PC6);
+		setBit(DDRC, PC6);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTC, PC6);
+		clrBit(DDRC, PC6);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTC, PC6);
+		clrBit(DDRC, PC6);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK1, PCINT14);
 	return RESULT_OK;
@@ -715,13 +1011,28 @@ void pcint23_16ClearInterruptRequest(void)
 
 resultValue_t pcint16ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD0); setBit(DDRD, PD0);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD0); setBit(DDRD, PD0);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD0); clrBit(DDRD, PD0);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD0); clrBit(DDRD, PD0);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD0);
+		setBit(DDRD, PD0);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD0);
+		setBit(DDRD, PD0);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD0);
+		clrBit(DDRD, PD0);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD0);
+		clrBit(DDRD, PD0);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT16);
 	return RESULT_OK;
@@ -743,13 +1054,28 @@ void pcint16DeactivateInterrupt(void)
 
 resultValue_t pcint17ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD1); setBit(DDRD, PD1);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD1); setBit(DDRD, PD1);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD1); clrBit(DDRD, PD1);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD1); clrBit(DDRD, PD1);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD1);
+		setBit(DDRD, PD1);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD1);
+		setBit(DDRD, PD1);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD1);
+		clrBit(DDRD, PD1);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD1);
+		clrBit(DDRD, PD1);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT17);
 	return RESULT_OK;
@@ -771,13 +1097,28 @@ void pcint17DeactivateInterrupt(void)
 
 resultValue_t pcint18ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD2); setBit(DDRD, PD2);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD2); setBit(DDRD, PD2);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD2); clrBit(DDRD, PD2);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD2); clrBit(DDRD, PD2);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD2);
+		setBit(DDRD, PD2);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD2);
+		setBit(DDRD, PD2);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD2);
+		clrBit(DDRD, PD2);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD2);
+		clrBit(DDRD, PD2);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT18);
 	return RESULT_OK;
@@ -799,13 +1140,28 @@ void pcint18DeactivateInterrupt(void)
 
 resultValue_t pcint19ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD3); setBit(DDRD, PD3);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD3); setBit(DDRD, PD3);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD3); clrBit(DDRD, PD3);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD3); clrBit(DDRD, PD3);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD3);
+		setBit(DDRD, PD3);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD3);
+		setBit(DDRD, PD3);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD3);
+		clrBit(DDRD, PD3);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD3);
+		clrBit(DDRD, PD3);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT19);
 	return RESULT_OK;
@@ -827,13 +1183,28 @@ void pcint19DeactivateInterrupt(void)
 
 resultValue_t pcint20ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD4); setBit(DDRD, PD4);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD4); setBit(DDRD, PD4);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD4); clrBit(DDRD, PD4);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD4); clrBit(DDRD, PD4);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD4);
+		setBit(DDRD, PD4);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD4);
+		setBit(DDRD, PD4);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD4);
+		clrBit(DDRD, PD4);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD4);
+		clrBit(DDRD, PD4);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT20);
 	return RESULT_OK;
@@ -855,13 +1226,28 @@ void pcint20DeactivateInterrupt(void)
 
 resultValue_t pcint21ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD5); setBit(DDRD, PD5);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD5); setBit(DDRD, PD5);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD5); clrBit(DDRD, PD5);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD5); clrBit(DDRD, PD5);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD5);
+		setBit(DDRD, PD5);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD5);
+		setBit(DDRD, PD5);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD5);
+		clrBit(DDRD, PD5);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD5);
+		clrBit(DDRD, PD5);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT21);
 	return RESULT_OK;
@@ -883,13 +1269,28 @@ void pcint21DeactivateInterrupt(void)
 
 resultValue_t pcint22ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD6); setBit(DDRD, PD6);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD6); setBit(DDRD, PD6);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD6); clrBit(DDRD, PD6);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD6); clrBit(DDRD, PD6);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD6);
+		setBit(DDRD, PD6);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD6);
+		setBit(DDRD, PD6);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD6);
+		clrBit(DDRD, PD6);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD6);
+		clrBit(DDRD, PD6);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT22);
 	return RESULT_OK;
@@ -911,13 +1312,28 @@ void pcint22DeactivateInterrupt(void)
 
 resultValue_t pcint23ActivateInterrupt(portMode_t port)
 {
-	switch(port){
-		case PORT_OUTPUT_LOW:		clrBit(PORTD, PD7); setBit(DDRD, PD7);	break;
-		case PORT_OUTPUT_HIGH:		setBit(PORTD, PD7); setBit(DDRD, PD7);	break;
-		case PORT_INPUT_TRISTATE:	clrBit(PORTD, PD7); clrBit(DDRD, PD7);	break;
-		case PORT_INPUT_PULL_UP:	setBit(PORTD, PD7); clrBit(DDRD, PD7);	break;
-		case PORT_NO_CHANGE:		break;
-		default:					return RESULT_PORT_VALUE_UNSUPPORTED;	break;
+	switch(port) {
+	case PORT_OUTPUT_LOW:
+		clrBit(PORTD, PD7);
+		setBit(DDRD, PD7);
+		break;
+	case PORT_OUTPUT_HIGH:
+		setBit(PORTD, PD7);
+		setBit(DDRD, PD7);
+		break;
+	case PORT_INPUT_TRISTATE:
+		clrBit(PORTD, PD7);
+		clrBit(DDRD, PD7);
+		break;
+	case PORT_INPUT_PULL_UP:
+		setBit(PORTD, PD7);
+		clrBit(DDRD, PD7);
+		break;
+	case PORT_NO_CHANGE:
+		break;
+	default:
+		return RESULT_PORT_VALUE_UNSUPPORTED;
+		break;
 	}
 	setBit(PCMSK2, PCINT23);
 	return RESULT_OK;
@@ -931,299 +1347,4 @@ void pcint23DeactivateInterrupt(void)
 {
 	clrBit(PCMSK2, PCINT23);
 	return;
-}
-
-
-
-
-
-
-
-
-
-
-/* -----------------------------------------------------------------------------
- * Configures the timer2 mode and prescaler
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2Config(timerModeA_t mode, timerPrescalerValueB_t prescaler)
-{
-	uint8 reg1 = TCCR2A;
-	uint8 reg2 = TCCR2B;
-
-	if(prescaler != TIMER_B_PRESCALER_NO_CHANGE){
-		reg2 &= ~(0x07 << CS20);
-		reg2 |= prescaler;
-	}
-
-	if(mode != TIMER_A_MODE_NO_CHANGE){
-		if(isBitSet(mode, 2))
-			setBit(reg2, WGM22);
-		else
-			clrBit(reg2, WGM22);
-		reg1 &= ~(0x03 << WGM20);
-		reg1 |= (mode & 0x03);
-	}
-	TCCR2A = reg1;
-	TCCR2B = reg2;
-
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Configures the timer2 compare outputs
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2OutputConfig(timerOutput_t compA, timerOutput_t compB)
-{
-	uint8 aux8 = TCCR2A;
-
-	if(compA != TIMER_PORT_NO_CHANGE){
-		aux8 &= ~(0x03 << COM2A0);
-		aux8 |= (compA << COM2A0); 
-	}
-	if(compB != TIMER_PORT_NO_CHANGE){
-		aux8 &= ~(0x03 << COM2B0);
-		aux8 |= (compB << COM2B0); 
-	}
-	TCCR2A = aux8;
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Activates the timer2 overflow interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ActivateOverflowInterrupt(void)
-{
-	setBit(TIMSK2, TOIE2);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Deactivates the timer2 overflow interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2DeactivateOverflowInterrupt(void)
-{
-	clrBit(TIMSK2, TOIE2);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Clears the timer2 overflow interrupt request
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ClearOverflowInterruptRequest(void)
-{
-	setBit(TIFR2, TOV2);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Activates the timer2 compare A interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ActivateCompareAInterrupt(void)
-{
-	setBit(TIMSK2, OCIE2A);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Deactivates the timer2 compare A interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2DeactivateCompareAInterrupt(void)
-{
-	clrBit(TIMSK2, OCIE2A);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Clears the timer2 compare A interrupt request
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ClearCompareAInterruptRequest(void)
-{
-	setBit(TIFR2, OCF2A);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Activates the timer2 compare B interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ActivateCompareBInterrupt(void)
-{
-	setBit(TIMSK2, OCIE2B);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Deactivates the timer2 compare B interrupt
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2DeactivateCompareBInterrupt(void)
-{
-	clrBit(TIMSK2, OCIE2B);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Clears the timer2 compare B interrupt request
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ClearCompareBInterruptRequest(void)
-{
-	setBit(TIFR2, OCF2B);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Forces a comparison on the output compare A of the timer2
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ForceCompareA(void)
-{
-	setBit(TCCR2B, FOC2A);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Forces a comparison on the output compare B of the timer2
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2ForceCompareB(void)
-{
-	setBit(TCCR2B, FOC2B);
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Sets the timer2 counter value
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2SetCounterValue(uint8 value)
-{
-	TCNT2 = value;
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Gets the timer2 counter value
- * -------------------------------------------------------------------------- */
-
-uint8 timer2GetCounterValue(void)
-{
-	return TCNT2;
-}
-
-/* -----------------------------------------------------------------------------
- * Sets the timer2 compare A value
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2SetCompareAValue(uint8 value)
-{
-	OCR2A = value;
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Gets the timer2 compare A value
- * -------------------------------------------------------------------------- */
-
-uint8 timer2GetCompareAValue(void)
-{
-	return OCR2A;
-}
-
-/* -----------------------------------------------------------------------------
- * Sets the timer2 compare B value
- * -------------------------------------------------------------------------- */
-
-resultValue_t timer2SetCompareBValue(uint8 value)
-{
-	OCR2B = value;
-	return RESULT_OK;
-}
-
-/* -----------------------------------------------------------------------------
- * Gets the timer2 compare B value
- * -------------------------------------------------------------------------- */
-
-uint8 timer2GetCompareBValue(void)
-{
-	return OCR2B;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* -----------------------------------------------------------------------------
- * Configures the SPI controller
- * -------------------------------------------------------------------------- */
-
-void spiInit(void)
-{
-/*
-	if(spiConfiguration.masterSlave){
-		setBit(SPI_DDR, SPI_MOSI);
-		setBit(SPI_DDR, SPI_SCK);
-		clrBit(SPI_DDR, SPI_MISO);
-	}else{
-		clrBit(SPI_DDR, SPI_MOSI);
-		clrBit(SPI_DDR, SPI_SCK);
-		setBit(SPI_DDR, SPI_MISO);
-	}
-	if(spiConfiguration.doubleSpeed)
-		setBit(SPSR, SPI2X);
-	else
-		clrBit(SPSR, SPI2X);
-	SPCR =	(spiConfiguration.interruptEnabled << SPIE) | 
-			(spiConfiguration.enabled << SPE) | 
-			(spiConfiguration.msbLsb << DORD) | 
-			(spiConfiguration.ma	sterSlave << MSTR) | 
-			(spiConfiguration.sckIdleValue << CPOL) | 
-			(spiConfiguration.leadingTrailingEdge << CPHA) | 
-			(spiConfiguration.clockPrescaler & 0x03);
-
-*/
-	return;
-}
-
-/* -----------------------------------------------------------------------------
- * Transmit data at the SPI bus in master mode
- * -------------------------------------------------------------------------- */
-
-uint8 spiMasterTransmit(uint8 data)
-{
-	SPDR = data;
-	waitUntilBitIsClear(SPSR, SPIF);
-	return SPDR;
-}
-
-/* -----------------------------------------------------------------------------
- * Receives data from the SPI bus
- * -------------------------------------------------------------------------- */
-
-uint8 spiSlaveTransmit(void)
-{
-	waitUntilBitIsClear(SPSR, SPIF);
-	return SPDR;
 }

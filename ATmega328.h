@@ -3,24 +3,20 @@
  * File:			ATmega328.h
  * Module:			ATmega328 basic interface
  * Author:			Leandro Schwarz
- * Version:			13.0
- * Last edition:	2017-06-17
+ *					Hazael dos Santos Batista
+ * Build:			1
+ * Last edition:	September 6, 2017
  * -------------------------------------------------------------------------- */
 
 #ifndef __ATMEGA328_H
-#define __ATMEGA328_H 130
-
-// -----------------------------------------------------------------------------
-// Microcontroller constant identifier -----------------------------------------
-
-#define MCU	_ATMEGA328_
+#define __ATMEGA328_H 1
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "globalDefines.h"
-#if __GLOBALDEFINES_H != 130
-	#error Error 100 - globalDefines.h - wrong version (globalDefines must be version 13.0).
+#if __GLOBALDEFINES_H != 1
+	#error Error 100 - globalDefines.h - wrong build (globalDefines must be build 1).
 #endif
 
 #include <avr/io.h>
@@ -135,69 +131,5 @@ void			pcint23DeactivateInterrupt(void);
 
 // -----------------------------------------------------------------------------
 // Timer/counter 1 -------------------------------------------------------------
-
-
-
-// -----------------------------------------------------------------------------
-// Timer/counter 2 -------------------------------------------------------------
-
-resultValue_t	timer2Config(timerModeA_t mode, timerPrescalerValueB_t prescaler);
-resultValue_t	timer2OutputConfig(timerOutput_t compA, timerOutput_t compB);
-resultValue_t	timer2ActivateOverflowInterrupt(void);
-resultValue_t	timer2DeactivateOverflowInterrupt(void);
-resultValue_t	timer2ClearOverflowInterruptRequest(void);
-resultValue_t	timer2ActivateCompareAInterrupt(void);
-resultValue_t	timer2DeactivateCompareAInterrupt(void);
-resultValue_t	timer2ClearCompareAInterruptRequest(void);
-resultValue_t	timer2ActivateCompareBInterrupt(void);
-resultValue_t	timer2DeactivateCompareBInterrupt(void);
-resultValue_t	timer2ClearCompareBInterruptRequest(void);
-resultValue_t	timer2ForceCompareA(void);
-resultValue_t	timer2ForceCompareB(void);
-resultValue_t	timer2SetCounterValue(uint8 value);
-uint8			timer2GetCounterValue(void);
-resultValue_t	timer2SetCompareAValue(uint8 value);
-uint8			timer2GetCompareAValue(void);
-resultValue_t	timer2SetCompareBValue(uint8 value);
-uint8			timer2GetCompareBValue(void);
-// ASSR register
-// GTCCR register
-
-
-// -----------------------------------------------------------------------------
-// Serial Peripheral Interface -------------------------------------------------
-
-#define SPI_DDR						DDRB
-#define SPI_MOSI					PB3
-#define SPI_MISO					PB4
-#define SPI_SCK						PB5
-
-#define spiMaster()					spiConfiguration.masterSlave = 1
-#define spiSlave()					spiConfiguration.masterSlave = 0
-#define spiEnable()					spiConfiguration.enabled = 1
-#define spiDisable()				spiConfiguration.enabled = 0
-#define spiEnableInterrupt()		spiConfiguration.interruptEnabled = 1
-#define spiDisableInterrupt()		spiConfiguration.interruptEnabled = 0
-#define spiMSBFirst()				spiConfiguration.msbLsb = 0
-#define spiLSBFirst()				spiConfiguration.msbLsb = 1
-#define spiSCKIdleLow()				spiConfiguration.sckIdleValue = 0
-#define spiSCKIdleHigh()			spiConfiguration.sckIdleValue = 1
-#define spiSampleLeadingEdge()		spiConfiguration.leadingTrailingEdge = 0
-#define spiSampleTrailingEdge()		spiConfiguration.leadingTrailingEdge = 1
-#define spiEnableDoubleSpeed()		spiConfiguration.doubleSpeed = 1
-#define spiDisableDoubleSpeed()		spiConfiguration.doubleSpeed = 0
-#define spiClockPrescaler2()		spiConfiguration.clockPrescaler = 4
-#define spiClockPrescaler4()		spiConfiguration.clockPrescaler = 0
-#define spiClockPrescaler8()		spiConfiguration.clockPrescaler = 5
-#define spiClockPrescaler16()		spiConfiguration.clockPrescaler = 1
-#define spiClockPrescaler32()		spiConfiguration.clockPrescaler = 6
-#define spiClockPrescaler64()		spiConfiguration.clockPrescaler = 2
-#define spiClockPrescaler128()		spiConfiguration.clockPrescaler = 3
-
-void	spiInit(void);
-uint8	spiMasterTransmit(uint8 data);
-uint8	spiSlaveTransmit(void);
-
-
 
 #endif

@@ -3,6 +3,7 @@
  * File:			keypad.c
  * Module:			Matrix keypad controller
  * Author:			Leandro Schwarz
+ *					Hazael dos Santos Batista
  * Version:			2.0
  * Last edition:	2017-09-01
  * Purpose:			Matrix keypad controller with support to 4x3, 4x4 and 5x3

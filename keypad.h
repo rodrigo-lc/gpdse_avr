@@ -3,6 +3,7 @@
  * File:			keypad.h
  * Module:			Matrix keypad controller
  * Author:			Leandro Schwarz
+ *					Hazael dos Santos Batista
  * Version:			2.0
  * Last edition:	2017-09-01
  * Purpose:			Matrix keypad controller with support to 4x3, 4x4 and 5x3
@@ -10,7 +11,7 @@
  * -------------------------------------------------------------------------- */
 
 #ifndef __KEYPAD_H
-#define __KEYPAD_H 12
+#define __KEYPAD_H 20
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
@@ -41,7 +42,7 @@ typedef enum keypadResult_t{
 	KEYPAD_NOT_INITIALIZED
 } keypadResult_t;
 
-typedef struct keypadConfiguration_t{
+typedef volatile struct keypadConfiguration_t{
 	volatile uint8 * linesDDR;
 	volatile uint8 * linesPORT;
 	volatile uint8 * linesPIN;
@@ -62,7 +63,7 @@ typedef struct keypadConfiguration_t{
 // -----------------------------------------------------------------------------
 // Macrofunctions --------------------------------------------------------------
 
-#define attachKeypad(object) volatile keypadConfiguration_t object = {.linesDDR = NULL, .linesPORT = NULL, .linesPIN = NULL, .columnsDDR = NULL, .columnsPORT = NULL, .keys = NULL, .linesLSB = 0, .columnsLSB = 0, .type = KEYPAD_TYPE_UNDEFINED, .lines = 0, .columns = 0, .portConfigured = FALSE, .keysConfigured = FALSE, .initialized = FALSE, .debounceTime = 1}
+#define createKeypad() (volatile keypadConfiguration_t){.linesDDR = NULL, .linesPORT = NULL, .linesPIN = NULL, .columnsDDR = NULL, .columnsPORT = NULL, .keys = NULL, .linesLSB = 0, .columnsLSB = 0, .type = KEYPAD_TYPE_UNDEFINED, .lines = 0, .columns = 0, .portConfigured = FALSE, .keysConfigured = FALSE, .initialized = FALSE, .debounceTime = 1}
 
 // -----------------------------------------------------------------------------
 // Functions declarations ------------------------------------------------------

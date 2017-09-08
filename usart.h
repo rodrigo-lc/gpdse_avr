@@ -8,14 +8,14 @@
  * -------------------------------------------------------------------------- */
 
 #ifndef __USART_H
-#define __USART_H 130
+#define __USART_H 1
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "globalDefines.h"
-#if __GLOBALDEFINES_H != 130
-	#error Error 100 - globalDefines.h - wrong version (globalDefines must be version 13.0).
+#if __GLOBALDEFINES_H != 1
+	#error Error 100 - globalDefines.h - wrong version (globalDefines must be build 1).
 #endif
 #include <stdio.h>
 
@@ -27,14 +27,14 @@ extern FILE usartStream;
 // -----------------------------------------------------------------------------
 // New data types --------------------------------------------------------------
 
-typedef enum usartError_t{
+typedef enum usartError_t {
 	USART_NO_ERRORS = 0,
 	USART_FRAME_ERROR = 1,
 	USART_PARITY_ERROR  = 2,
 	USART_BUFFER_OVERFLOW_ERROR = 4
 } usartError_t;
 
-typedef enum usartDataBits_t{
+typedef enum usartDataBits_t {
 	USART_DATA_BITS_5 = 0,
 	USART_DATA_BITS_6,
 	USART_DATA_BITS_7,
@@ -43,20 +43,20 @@ typedef enum usartDataBits_t{
 	USART_DATA_BITS_NO_CHANGE = 255
 } usartDataBits_t;
 
-typedef enum usartStopBits_t{
+typedef enum usartStopBits_t {
 	USART_STOP_BIT_SINGLE = 0,
 	USART_STOP_BIT_DOUBLE,
 	USART_STOP_BIT_NO_CHANGE = 255
 } usartStopBits_t;
 
-typedef enum usartParity_t{
+typedef enum usartParity_t {
 	USART_PARITY_NONE = 0,
 	USART_PARITY_ODD,
 	USART_PARITY_EVEN,
 	USART_PARITY_NO_CHANGE = 255
 } usartParity_t;
 
-typedef enum usartMode_t{
+typedef enum usartMode_t {
 	USART_MODE_ASYNCHRONOUS = 0,
 	USART_MODE_ASYNCHRONOUS_DOUBLE_SPEED,
 	USART_MODE_SYNCHRONOUS_XCK_FALLING,
@@ -65,7 +65,7 @@ typedef enum usartMode_t{
 	USART_MODE_NO_CHANGE = 255
 } usartMode_t;
 
-typedef enum usartBaudRate_t{
+typedef enum usartBaudRate_t {
 	USART_BAUD_600 = 600UL,
 	USART_BAUD_1200 = 1200UL,
 	USART_BAUD_2400 = 2400UL,

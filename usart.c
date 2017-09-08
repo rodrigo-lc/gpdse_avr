@@ -11,8 +11,8 @@
 // Header files ----------------------------------------------------------------
 
 #include "usart.h"
-#if __USART_H != 130
-	#error Error 101 - Version mismatch on header and source code files (usart).
+#if __USART_H != 1
+	#error Error 101 - Build mismatch on header and source code files (usart).
 #endif
 
 // -----------------------------------------------------------------------------
@@ -37,30 +37,41 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 	reg1 &= ~((1 << FE0) | (1 << DOR0) | (1 << UPE0));
 
 	// USART stop bits
-	if(stopBits != USART_STOP_BIT_NO_CHANGE){
-		switch(stopBits){
-			case USART_STOP_BIT_SINGLE:	clrBit(reg3, USBS0);				break;
-			case USART_STOP_BIT_DOUBLE:	setBit(reg3, USBS0);				break;
-			default:					return RESULT_UNSUPPORTED_USART_STOP_BITS;
+	if(stopBits != USART_STOP_BIT_NO_CHANGE) {
+		switch(stopBits) {
+		case USART_STOP_BIT_SINGLE:
+			clrBit(reg3, USBS0);
+			break;
+		case USART_STOP_BIT_DOUBLE:
+			setBit(reg3, USBS0);
+			break;
+		default:
+			return RESULT_UNSUPPORTED_USART_STOP_BITS;
 		}
 	}
 
 	// USART parity bits
-	if(parity != USART_PARITY_NO_CHANGE){
+	if(parity != USART_PARITY_NO_CHANGE) {
 		reg3 &= ~(0x03 << UPM00);
-		switch(parity){
-			case USART_PARITY_NONE:		break;
-			case USART_PARITY_EVEN:		reg3 |= (0x02 << UPM00);	break;
-			case USART_PARITY_ODD:		reg3 |= (0x03 << UPM00);	break;
-			default:					return RESULT_UNSUPPORTED_USART_PARITY;
+		switch(parity) {
+		case USART_PARITY_NONE:
+			break;
+		case USART_PARITY_EVEN:
+			reg3 |= (0x02 << UPM00);
+			break;
+		case USART_PARITY_ODD:
+			reg3 |= (0x03 << UPM00);
+			break;
+		default:
+			return RESULT_UNSUPPORTED_USART_PARITY;
 		}
 	}
 
 	// USART data bits
-	if(dataBits != USART_DATA_BITS_NO_CHANGE){
+	if(dataBits != USART_DATA_BITS_NO_CHANGE) {
 		clrBit(reg2, UCSZ02);
 		reg3 &= ~(0x03 << UCSZ00);
-		switch(dataBits){
+		switch(dataBits) {
 		case USART_DATA_BITS_5:
 			break;
 		case USART_DATA_BITS_6:
@@ -82,12 +93,12 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 	}
 
 	// USART mode
-	if(mode != USART_MODE_NO_CHANGE){
+	if(mode != USART_MODE_NO_CHANGE) {
 		modeAux = mode;
 		reg3 &= ~(0x03 << UMSEL00);
 		clrBit(reg1, U2X0);				// Single Speed
 		clrBit(reg3, UCPOL0);			// Polarity
-		switch(mode){
+		switch(mode) {
 		case USART_MODE_ASYNCHRONOUS:
 			break;
 		case USART_MODE_ASYNCHRONOUS_DOUBLE_SPEED:
@@ -106,13 +117,13 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 		default:
 			return RESULT_UNSUPPORTED_USART_MODE;
 		}
-	}else{
+	} else {
 		aux8 = (0x03 & (reg3 >> UMSEL00));
-		switch(aux8){
+		switch(aux8) {
 		case 0:	// Asynchronous mode
-			if(isBitClr(reg1, U2X0)){	// Single speed
+			if(isBitClr(reg1, U2X0)) {	// Single speed
 				modeAux = USART_MODE_ASYNCHRONOUS;
-			}else{						// Double speed
+			} else {						// Double speed
 				modeAux = USART_MODE_ASYNCHRONOUS_DOUBLE_SPEED;
 			}
 			break;
@@ -122,8 +133,8 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 		}
 	}
 
-	if(baudRate != USART_BAUD_NO_CHANGE){
-		switch(modeAux){
+	if(baudRate != USART_BAUD_NO_CHANGE) {
+		switch(modeAux) {
 		case USART_MODE_ASYNCHRONOUS:
 			aux64 = (F_CPU / 16 / baudRate) - 1;
 			break;
@@ -134,8 +145,8 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 			aux64 = (F_CPU / 2 / baudRate) - 1;
 			break;
 		}
-//		if((aux64 > (1.05 * baudRate)) || (aux64 < (0.95 * baudRate)))
-//			return RESULT_UNSUPPORTED_USART_BAUD_RATE;
+		//		if((aux64 > (1.05 * baudRate)) || (aux64 < (0.95 * baudRate)))
+		//			return RESULT_UNSUPPORTED_USART_BAUD_RATE;
 	}
 
 	UCSR0A = reg1;
@@ -143,7 +154,7 @@ resultValue_t usartConfig(usartMode_t mode, usartBaudRate_t baudRate, usartDataB
 	UCSR0C = reg3;
 	UBRR0H = (uint8)(0x0F & (aux64 >> 8));
 	UBRR0L = (uint8)(0xFF & aux64);
-	
+
 	return RESULT_OK;
 }
 
@@ -292,12 +303,15 @@ usartError_t usartCheckError(void)
 {
 	usartError_t error = USART_NO_ERRORS;
 
-	if(isBitSet(UCSR0A, FE0))
+	if(isBitSet(UCSR0A, FE0)) {
 		error |= USART_FRAME_ERROR;
-	if(isBitSet(UCSR0A, DOR0))
+	}
+	if(isBitSet(UCSR0A, DOR0)) {
 		error |= USART_PARITY_ERROR;
-	if(isBitSet(UCSR0A, UPE0))
+	}
+	if(isBitSet(UCSR0A, UPE0)) {
 		error |= USART_BUFFER_OVERFLOW_ERROR;
+	}
 
 	return error;
 }
@@ -326,10 +340,11 @@ resultValue_t usartTransmit9bits(uint16 data)
 	while(!usartIsBufferEmpty())
 		;	// Waits until last transmission ends
 	aux = ((data & 0x100) >> 8);
-	if(aux)
+	if(aux) {
 		setBit(UCSR0B, TXB80);
-	else
+	} else {
 		clrBit(UCSR0B, TXB80);
+	}
 	UDR0 = (uint8)data;
 
 	return RESULT_OK;
@@ -341,7 +356,7 @@ resultValue_t usartTransmit9bits(uint16 data)
 
 uint8 usartReceive(void)
 {
-	uint8 status;
+	__attribute__((unused)) volatile uint8 status;
 
 	while(!usartIsReceptionComplete())
 		;	// Waits until last reception ends
@@ -356,7 +371,7 @@ uint8 usartReceive(void)
 
 uint16 usartReceive9bits(void)
 {
-	uint8 status;
+	__attribute__((unused)) volatile uint8 status;
 	uint8 byteh;
 	uint8 bytel;
 	uint16 byte;
@@ -379,9 +394,10 @@ uint16 usartReceive9bits(void)
 
 void usartClearReceptionBuffer(void)
 {
-	uint8 aux;
-	while(usartIsReceptionComplete())
+	__attribute__((unused)) volatile uint8 aux;
+	while(usartIsReceptionComplete()) {
 		aux = UDR0;
+	}
 
 	return;
 }

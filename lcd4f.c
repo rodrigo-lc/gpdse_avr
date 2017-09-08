@@ -21,11 +21,11 @@
 // -----------------------------------------------------------------------------
 // Static function declarations ------------------------------------------------
 
-static void lcdWriteCommand(lcdConfiguration_t * lcd, uint8 command);
 static void lcdFunctionSet8Bits(lcdConfiguration_t * lcd, uint8 command);
+static void lcdWaitUntilReady(lcdConfiguration_t * lcd);
 static void lcdWriteCharacter(lcdConfiguration_t * lcd, uint8 character);
+static void lcdWriteCommand(lcdConfiguration_t * lcd, uint8 command);
 static int16 lcdWriteStd(int8 c, FILE * stream);
-void lcdWaitUntilReady(lcdConfiguration_t * lcd);
 
 // -----------------------------------------------------------------------------
 // Global variables ------------------------------------------------------------
@@ -58,8 +58,7 @@ void lcdClearScreen(lcdConfiguration_t * lcd)
  * Purpose:		Turns cursor ON/OFF, without changing display or blink option
  * Arguments:	lcd			Pointer to the LCD struct
  *				state		ON or OFF (enumerations defined at logic_t)
- * Returns:		LCD_NOT_INITIALIZED
- *				LCD_OK
+ * Returns:		-
  * -------------------------------------------------------------------------- */
 
 void lcdCursor(lcdConfiguration_t * lcd, logic_t state)
@@ -334,8 +333,6 @@ void lcdInit(lcdConfiguration_t * lcd, lcdSize_t size, lcdFont_t font)
 	command |= (font == LCD_FONT_5X8) ? LCD_FUNCTION_5x8_FONT : LCD_FUNCTION_5x10_FONT;
 	command |= (size < 200) ? LCD_FUNCTION_1_LINE : LCD_FUNCTION_2_LINES;
 	lcdWriteCommand(lcd, command);
-	lcdWriteCommand(lcd, LCD_DISPLAY_OFF);
-	lcdWriteCommand(lcd, LCD_CLEAR_SCREEN);
 	lcdWaitUntilReady(lcd);
 	lcdWriteCommand(lcd, LCD_DISPLAY_OFF);
 	lcdWaitUntilReady(lcd);
@@ -545,7 +542,7 @@ void lcdWriteCharacter(lcdConfiguration_t * lcd, uint8 character)
 {
 	if(lcd->cursorColumn < 40) {
 		lcdWaitUntilReady(lcd);
-		clrBit(*(lcd->controlPORT), lcd->controlRW);	// LCD in write mode
+		clrBit(*(lcd->controlPORT), lcd->controlRW);		// LCD in write mode
 		setBit(*(lcd->controlPORT), lcd->controlRS);		// LCD in command mode
 		clrBit(*(lcd->controlPORT), lcd->controlE);			// Makes sure enable is LOW
 		clrMask(*(lcd->dataPORT), 0x0F, lcd->dataFirst);	// Writes data (higher nibble)

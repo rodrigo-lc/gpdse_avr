@@ -21,9 +21,9 @@
 // -----------------------------------------------------------------------------
 // Static function declarations ------------------------------------------------
 
-static void lcdWriteCommand(lcdConfiguration_t * lcd, uint8 command);
 static void lcdFunctionSet8Bits(lcdConfiguration_t * lcd, uint8 command);
 static void lcdWriteCharacter(lcdConfiguration_t * lcd, uint8 character);
+static void lcdWriteCommand(lcdConfiguration_t * lcd, uint8 command);
 static int16 lcdWriteStd(int8 c, FILE * stream);
 
 // -----------------------------------------------------------------------------

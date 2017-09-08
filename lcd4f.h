@@ -56,21 +56,21 @@ typedef volatile struct lcdConfiguration_t {
 	uint8		dataFirst			: 3;
 	vuint8 *	controlDDR;
 	vuint8 *	controlPORT;
+	uint8		controlE			: 3;
 	uint8		controlRS			: 3;
 	uint8		controlRW			: 3;
-	uint8		controlE			: 3;
 	// Display hardware
-	uint8		lines				: 2;
 	uint8		columns				: 6;
+	uint8		lines				: 2;
 	// Entry mode set
 	uint8		entryIncDec			: 1;
 	uint8		entryShiftDisplay	: 1;
 	// Display and cursor configuration
-	bool_t		displayOn			: 1;	// 0 off, 1 on
-	bool_t		cursorOn			: 1;	// 0 off, 1 on
 	bool_t		cursorBlink			: 1;	// 0 off, 1 on
 	uint8		cursorColumn		: 6;	// 0 to 39
 	uint8		cursorLine			: 2;	// 0 to 3
+	bool_t		cursorOn			: 1;	// 0 off, 1 on
+	bool_t		displayOn			: 1;	// 0 off, 1 on
 	// Unused bits
 	uint8		unusedBits			: 7;
 } lcdConfiguration_t;
@@ -122,7 +122,7 @@ extern lcdConfiguration_t * defaultDisplay;
 // -----------------------------------------------------------------------------
 // Macrofunctions --------------------------------------------------------------
 
-#define createLcd() (lcdConfiguration_t){.dataDDR = NULL, .dataPORT = NULL, .dataPIN = NULL, .dataFirst = 0, .controlDDR = NULL, .controlPORT = NULL, .controlE = 0, .controlRS = 0, .controlRW = 0, .entryIncDec = LCD_INCREMENT, .entryShiftDisplay = LCD_DISPLAY_OVERWRITE, .lines = 0, .columns = 0, .displayOn = FALSE, .cursorOn = FALSE, .cursorBlink = FALSE, .cursorColumn = 0, .cursorLine = 0, .unusedBits = 0}
+#define createLcd() (lcdConfiguration_t){.dataDDR = NULL, .dataPORT = NULL, .dataPIN = NULL, .dataFirst = 0, .controlDDR = NULL, .controlPORT = NULL, .controlE = 0, .controlRS = 0, .controlRW = 0, .columns = 0, .lines = 0, .entryIncDec = LCD_INCREMENT, .entryShiftDisplay = LCD_DISPLAY_OVERWRITE, .cursorBlink = FALSE, .cursorColumn = 0, .cursorLine = 0, .cursorOn = FALSE, .displayOn = FALSE, .unusedBits = 0}
 
 // -----------------------------------------------------------------------------
 // Public functions declaration ------------------------------------------------

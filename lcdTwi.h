@@ -1,23 +1,23 @@
 /* -----------------------------------------------------------------------------
  * Project:			GPDSE AVR8 Library
- * File:			lcd4f.h
- * Module:			Character LCD controller
+ * File:			lcdTwi.h
+ * Module:			Character LCD controller Using PCF8594 over TWI
  * Author:			Leandro Schwarz
  *					Hazael dos Santos Batista
  * Build:			1
- * Last edition:	September 18, 2017
- * Purpose:			Character LCD controller with 4 bits interface and support
- *					to busy flag
+ * Last edition:	September 15, 2017
+ * Purpose:			Character LCD controller over Two Wires Interface without
+ *					support to busy flag (delay-driven)
  * ---------------------------------------------------------------------------*/
 
-#ifndef __LCD4F_H
-#define __LCD4F_H 1
+#ifndef __LCD_TWI_H_
+#define __LCD_TWI_H_ 1
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "globalDefines.h"
-#if __GLOBALDEFINES_H != 1
+#if __GLOBALDEFINES_H < 1
 	#error Error 100 - The defintion file is outdated (globalDefines must be build 1).
 #endif
 #include <stdio.h>
@@ -48,17 +48,16 @@
 // -----------------------------------------------------------------------------
 // New data types --------------------------------------------------------------
 
-typedef volatile struct lcdConfiguration_t {
+typedef volatile struct lcdTwiConfiguration_t {
 	// I/O ports
-	vuint8 *	dataDDR;
-	vuint8 *	dataPORT;
-	vuint8 *	dataPIN;
-	uint8		dataFirst			: 3;
-	vuint8 *	controlDDR;
-	vuint8 *	controlPORT;
-	uint8		controlE			: 3;
-	uint8		controlRS			: 3;
-	uint8		controlRW			: 3;
+	uint8		pinE				: 3;
+	uint8		pinRs				: 3;
+	uint8		pinRw				: 3;
+	uint8		pinBl				: 3;
+	uint8		pinD4				: 3;
+	uint8		pinD5				: 3;
+	uint8		pinD6				: 3;
+	uint8		pinD7				: 3;
 	// Display hardware
 	uint8		columns				: 6;
 	uint8		lines				: 2;
@@ -72,10 +71,10 @@ typedef volatile struct lcdConfiguration_t {
 	bool_t		cursorOn			: 1;	// 0 off, 1 on
 	bool_t		displayOn			: 1;	// 0 off, 1 on
 	// Unused bits
-	uint8		unusedBits			: 7;
-} lcdConfiguration_t;
+	uint8		unusedBits			: 3;
+} lcdTwiConfiguration_t;
 
-typedef enum lcdSize_t {
+typedef enum lcdTwiSize_t {
 	LCD_SIZE_UNDEFINED = 0,
 	LCD_8X1		= 108,
 	LCD_8X2		= 208,
@@ -94,59 +93,59 @@ typedef enum lcdSize_t {
 	LCD_32X2	= 232,
 	LCD_40X1	= 140,
 	LCD_40X2	= 240
-} lcdSize_t;
+} lcdTwiSize_t;
 
-typedef enum lcdFont_t {
+typedef enum lcdTwiFont_t {
 	LCD_FONT_5X8 = 0,
 	LCD_FONT_5X10 = 1
-} lcdFont_t;
+} lcdTwiFont_t;
 
-typedef enum lcdShiftOverwrite_t {
+typedef enum lcdTwiShiftOverwrite_t {
 	LCD_DISPLAY_OVERWRITE = 0,
 	LCD_DISPLAY_SHIFT = 1,
 	LCD_DISPLAY_NO_CHANGE = 0xFF
-} lcdShiftOverwrite_t;
+} lcdTwiShiftOverwrite_t;
 
-typedef enum lcdIncrementDecrement_t {
+typedef enum lcdTwiIncrementDecrement_t {
 	LCD_DECREMENT = 0,
 	LCD_INCREMENT = 1,
 	LCD_INCDEC_NO_CHANGE = 0xFF
-} lcdIncrementDecrement_t;
+} lcdTwiIncrementDecrement_t;
 
 // -----------------------------------------------------------------------------
 // Global variables ------------------------------------------------------------
 
-extern FILE lcdStream;
-extern lcdConfiguration_t * defaultDisplay;
+extern FILE lcdTwiStream;
+extern lcdTwiConfiguration_t * defaultDisplay;
 
 // -----------------------------------------------------------------------------
 // Macrofunctions --------------------------------------------------------------
 
-#define createLcd() (lcdConfiguration_t){.dataDDR = NULL, .dataPORT = NULL, .dataPIN = NULL, .dataFirst = 0, .controlDDR = NULL, .controlPORT = NULL, .controlE = 0, .controlRS = 0, .controlRW = 0, .columns = 0, .lines = 0, .entryIncDec = LCD_INCREMENT, .entryShiftDisplay = LCD_DISPLAY_OVERWRITE, .cursorBlink = FALSE, .cursorColumn = 0, .cursorLine = 0, .cursorOn = FALSE, .displayOn = FALSE, .unusedBits = 0}
+#define createLcdTwi() (lcdTwiConfiguration_t){.pinE = 2, .pinRs = 0, .pinRw = 1, .pinBl = 3, .pinD4 = 4, .pinD5 = 5, .pinD6 = 6, .pinD7 = 7, .columns = 0, .lines = 0, .entryIncDec = LCD_INCREMENT, .entryShiftDisplay = LCD_DISPLAY_OVERWRITE, .cursorBlink = FALSE, .cursorColumn = 0, .cursorLine = 0, .cursorOn = FALSE, .displayOn = FALSE, .unusedBits = 0}
 
 // -----------------------------------------------------------------------------
 // Public functions declaration ------------------------------------------------
 
-void lcdClearScreen(lcdConfiguration_t * lcd);
-void lcdCursor(lcdConfiguration_t * lcd, logic_t state);
-void lcdCursorBlink(lcdConfiguration_t * lcd, logic_t state);
-void lcdCursorGoTo(lcdConfiguration_t * lcd, uint8 line, uint8 column);
-void lcdCursorHome(lcdConfiguration_t * lcd);
-void lcdCursorMove(lcdConfiguration_t * lcd, direction_t dir);
-void lcdCursorMoveFirstLine(lcdConfiguration_t * lcd);
-void lcdCursorMoveNextLine(lcdConfiguration_t * lcd);
-void lcdDisplay(lcdConfiguration_t * lcd, logic_t state);
-void lcdDisplayShift(lcdConfiguration_t * lcd, direction_t dir);
-void lcdInit(lcdConfiguration_t * lcd, lcdSize_t size, lcdFont_t font);
-void lcdSetControlPort(lcdConfiguration_t * lcd, vuint8 * controlDDR, vuint8 * controlPORT, uint8 controlE, uint8 controlRS, uint8 controlRW);
-void lcdSetDataPort(lcdConfiguration_t * lcd, vuint8 * dataDDR, vuint8 * dataPORT, vuint8 * dataPIN, uint8 dataFirst);
-void lcdSetEntryMode(lcdConfiguration_t * lcd, lcdIncrementDecrement_t dir, lcdShiftOverwrite_t mode);
-void lcdStdio(lcdConfiguration_t * lcd);
+void lcdClearScreen(lcdTwiConfiguration_t * lcd);
+void lcdCursor(lcdTwiConfiguration_t * lcd, logic_t state);
+void lcdCursorBlink(lcdTwiConfiguration_t * lcd, logic_t state);
+void lcdCursorGoTo(lcdTwiConfiguration_t * lcd, uint8 line, uint8 column);
+void lcdCursorHome(lcdTwiConfiguration_t * lcd);
+void lcdCursorMove(lcdTwiConfiguration_t * lcd, direction_t dir);
+void lcdCursorMoveFirstLine(lcdTwiConfiguration_t * lcd);
+void lcdCursorMoveNextLine(lcdTwiConfiguration_t * lcd);
+void lcdDisplay(lcdTwiConfiguration_t * lcd, logic_t state);
+void lcdDisplayShift(lcdTwiConfiguration_t * lcd, direction_t dir);
+void lcdInit(lcdTwiConfiguration_t * lcd, lcdTwiSize_t size, lcdTwiFont_t font);
+void lcdSetControlPort(lcdTwiConfiguration_t * lcd, vuint8 * controlDDR, vuint8 * controlPORT, uint8 controlE, uint8 controlRS);
+void lcdSetDataPort(lcdTwiConfiguration_t * lcd, vuint8 * dataDDR, vuint8 * dataPORT, uint8 dataFirst);
+void lcdSetEntryMode(lcdTwiConfiguration_t * lcd, lcdTwiIncrementDecrement_t dir, lcdTwiShiftOverwrite_t mode);
+void lcdStdio(lcdTwiConfiguration_t * lcd);
 
 // -----------------------------------------------------------------------------
 // Functions for debug purposes ------------------------------------------------
 
-uint8 lcdGetLine(lcdConfiguration_t * lcd);
-uint8 lcdGetColumn(lcdConfiguration_t * lcd);
+uint8 lcdGetLine(lcdTwiConfiguration_t * lcd);
+uint8 lcdGetColumn(lcdTwiConfiguration_t * lcd);
 
 #endif

@@ -3,21 +3,22 @@
  * File:			twiMaster.c
  * Module:			Two Wire Interface master controller
  * Author:			Leandro Schwarz
+ *					Hazael dos Santos Batista
  *					Fábio Cabral Pacheco
- * Version:			2.0
- * Last edition:	2016-01-22
+ * Build:			1
+ * Last edition:	September 18, 2017
  * Purpose:			TWI (I2C) bus controller using the dedicated peripheral
  *					(interrupt-driven)
  * Notes:			This code is heavily based on the Atmel Application Note
- *					AVR315. Unfortunately, the original authorship of the code
- *					is referred as Itwa. Please refer him as the main author
+ *					AVR315. The original authorship of the code is refered as
+ *					Itwa. Please refer him as the main author.
  * -------------------------------------------------------------------------- */
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "twiMaster.h"
-#if __TWIMASTER_H != 20
+#if __TWIMASTER_H != 1
 	#error Error 101 - Version mismatch on header and source code files (twiMaster).
 #endif
 

@@ -1,11 +1,11 @@
 /* -----------------------------------------------------------------------------
  * Project:			GPDSE AVR8 Library
  * File:			lcd8d.h
-  * Module:			Character LCD controller
+ * Module:			Character LCD controller
  * Author:			Leandro Schwarz
  *					Hazael dos Santos Batista
  * Build:			1
- * Last edition:	September 6, 2017
+ * Last edition:	September 18, 2017
  * Purpose:			Character LCD controller with 8 bits interface without
  *					support to busy flag (delay-driven)
  * ---------------------------------------------------------------------------*/
@@ -17,7 +17,7 @@
 // Header files ----------------------------------------------------------------
 
 #include "globalDefines.h"
-#if __GLOBALDEFINES_H < 1
+#if __GLOBALDEFINES_H != 1
 	#error Error 100 - The defintion file is outdated (globalDefines must be build 1).
 #endif
 #include <stdio.h>

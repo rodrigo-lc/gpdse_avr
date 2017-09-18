@@ -5,7 +5,7 @@
  * Author:			Leandro Schwarz
  *					Hazael dos Santos Batista
  * Build:			1
- * Last edition:	September 6, 2017
+ * Last edition:	September 18, 2017
  * Purpose:			Character LCD controller with 8 bits interface and support
  *					to busy flag
  * -------------------------------------------------------------------------- */

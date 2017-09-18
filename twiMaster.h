@@ -3,25 +3,26 @@
  * File:			twiMaster.h
  * Module:			Two Wire Interface master controller
  * Author:			Leandro Schwarz
+ *					Hazael dos Santos Batista
  *					Fábio Cabral Pacheco
- * Version:			2.0
- * Last edition:	2016-01-22
+ * Build:			1
+ * Last edition:	September 18, 2017
  * Purpose:			TWI (I2C) bus controller using the dedicated peripheral
  *					(interrupt-driven)
  * Notes:			This code is heavily based on the Atmel Application Note
- *					AVR315. Unfortunelly, the original authorship of the code
- *					is refered as Itwa. Please refer him as the main author
+ *					AVR315. The original authorship of the code is refered as
+ *					Itwa. Please refer him as the main author.
  * -------------------------------------------------------------------------- */
 
 #ifndef __TWIMASTER_H
-#define __TWIMASTER_H 20
+#define __TWIMASTER_H 1
 
 // -----------------------------------------------------------------------------
 // Header files ----------------------------------------------------------------
 
 #include "globalDefines.h"
-#if __GLOBALDEFINES_H < 123
-	#error Error 100 - The defintion file is outdated (globalDefines must be version 12.3 or greater).
+#if __GLOBALDEFINES_H != 1
+	#error Error 100 - The defintion file is outdated (globalDefines must be build 1).
 #endif
 
 // -----------------------------------------------------------------------------
